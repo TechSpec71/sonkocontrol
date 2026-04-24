@@ -13,7 +13,9 @@
         .gold-text { color: #FFD700; }
         .gold-bg { background-color: #FFD700; }
 
-        #map { height: 560px; width: 100%; border-radius: 12px; overflow: hidden; background: #111; }
+        #map { height: 380px; width: 100%; border-radius: 12px; overflow: hidden; background: #111; }
+        @media (min-width: 768px) { #map { height: 480px; } }
+        @media (min-width: 1024px) { #map { height: 560px; } }
 
         /* Vehicle markers — small "model car" chips on the map */
         .vehicle-marker {
@@ -113,13 +115,16 @@
         .marquee-item {
             display: inline-flex;
             align-items: center;
-            padding: 8px 40px;
+            padding: 7px 22px;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             color: #FFD700;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
+        }
+        @media (min-width: 768px) {
+            .marquee-item { padding: 8px 40px; font-size: 13px; letter-spacing: 0.15em; }
         }
         .marquee-item .heart {
             color: #ef4444;
@@ -167,15 +172,15 @@
 </head>
 <body class="font-sans">
 
-    <nav class="border-b border-gray-800 p-3 flex justify-between items-center bg-[#111]">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 gold-bg rounded-full flex items-center justify-center text-black font-bold">SRT</div>
-            <h1 class="text-lg font-bold tracking-tighter gold-text">MIKE SONKO CONTROL DASHBOARD</h1>
-            <div class="sonko-chip" title="Mhe. Mike Sonko">
+    <nav class="border-b border-gray-800 px-3 py-3 flex justify-between items-center gap-2 bg-[#111]">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 gold-bg rounded-full flex items-center justify-center text-black font-bold text-xs sm:text-base">SRT</div>
+            <h1 class="text-[11px] sm:text-base lg:text-lg font-bold tracking-tighter gold-text truncate leading-tight">MIKE SONKO CONTROL DASHBOARD</h1>
+            <div class="sonko-chip shrink-0" title="Mhe. Mike Sonko">
                 <img src="img/sonko.jpg" alt="Mike Sonko" />
             </div>
         </div>
-        <div class="hidden md:block text-xs font-mono text-gray-500 uppercase tracking-widest">
+        <div class="hidden md:block text-xs font-mono text-gray-500 uppercase tracking-widest shrink-0">
             System Status: <span class="text-green-500">Secure & Active</span>
         </div>
     </nav>
@@ -192,31 +197,31 @@
         </div>
     </div>
 
-    <main class="p-6 max-w-7xl mx-auto">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
-                <p class="text-gray-500 text-xs uppercase">Fleet Active</p>
-                <p class="text-2xl font-bold gold-text">24 <span class="text-xs text-gray-400 font-normal">Vehicles</span></p>
+    <main class="p-3 sm:p-6 max-w-7xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div class="bg-[#161616] p-3 sm:p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-[10px] sm:text-xs uppercase">Fleet Active</p>
+                <p class="text-xl sm:text-2xl font-bold gold-text">24 <span class="text-[10px] sm:text-xs text-gray-400 font-normal">Vehicles</span></p>
             </div>
-            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
-                <p class="text-gray-500 text-xs uppercase">Water Dispatched</p>
-                <p class="text-2xl font-bold">180K <span class="text-xs text-gray-400 font-normal">Liters</span></p>
+            <div class="bg-[#161616] p-3 sm:p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-[10px] sm:text-xs uppercase">Water Dispatched</p>
+                <p class="text-xl sm:text-2xl font-bold">180K <span class="text-[10px] sm:text-xs text-gray-400 font-normal">Liters</span></p>
             </div>
-            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
-                <p class="text-gray-500 text-xs uppercase">Rescue Alerts</p>
-                <p class="text-2xl font-bold text-red-500">03</p>
+            <div class="bg-[#161616] p-3 sm:p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-[10px] sm:text-xs uppercase">Rescue Alerts</p>
+                <p class="text-xl sm:text-2xl font-bold text-red-500">03</p>
             </div>
-            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
-                <p class="text-gray-500 text-xs uppercase">Relief Cases</p>
-                <p class="text-2xl font-bold text-blue-400">12</p>
+            <div class="bg-[#161616] p-3 sm:p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-[10px] sm:text-xs uppercase">Relief Cases</p>
+                <p class="text-xl sm:text-2xl font-bold text-blue-400">12</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 bg-[#161616] p-4 rounded-xl border border-gray-800">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-sm font-bold uppercase tracking-widest">Live GPS Radar: Nairobi Aerial</h3>
-                    <span class="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">ENCRYPTED STREAMING</span>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div class="lg:col-span-2 bg-[#161616] p-3 sm:p-4 rounded-xl border border-gray-800">
+                <div class="flex justify-between items-center mb-3 sm:mb-4 gap-2">
+                    <h3 class="text-xs sm:text-sm font-bold uppercase tracking-widest truncate">Live GPS Radar: Nairobi</h3>
+                    <span class="text-[9px] sm:text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400 shrink-0">ENCRYPTED</span>
                 </div>
                 <div class="relative">
                     <div id="map"></div>
@@ -224,39 +229,39 @@
                 </div>
             </div>
 
-            <div class="bg-[#161616] p-4 rounded-xl border border-gray-800">
-                <h3 class="text-sm font-bold mb-4 uppercase gold-text">Active Operations</h3>
+            <div class="bg-[#161616] p-3 sm:p-4 rounded-xl border border-gray-800">
+                <h3 class="text-sm font-bold mb-3 sm:mb-4 uppercase gold-text">Active Operations</h3>
                 <div id="ops-list" class="space-y-3"></div>
-                <button class="w-full mt-8 py-3 gold-bg text-black font-black text-sm uppercase rounded shadow-2xl">
+                <button class="w-full mt-6 sm:mt-8 py-3 gold-bg text-black font-black text-xs sm:text-sm uppercase rounded shadow-2xl">
                     Push Daily Report to Mheshimiwa
                 </button>
             </div>
         </div>
 
         <!-- ============ FOLLOW-UP CASES ============ -->
-        <section class="mt-8">
-            <div class="flex items-end justify-between mb-4">
-                <div>
-                    <h2 class="text-lg font-bold uppercase gold-text tracking-widest">Follow-Up Cases</h2>
-                    <p class="text-xs text-gray-500 mt-1">Beneficiary status updates from the field — verified by SRT case officers.</p>
+        <section class="mt-6 sm:mt-8">
+            <div class="flex items-end justify-between mb-3 sm:mb-4 gap-2">
+                <div class="min-w-0">
+                    <h2 class="text-base sm:text-lg font-bold uppercase gold-text tracking-widest">Follow-Up Cases</h2>
+                    <p class="text-[11px] sm:text-xs text-gray-500 mt-1">Beneficiary status updates from the field — verified by SRT case officers.</p>
                 </div>
-                <span class="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-mono">LIVE FEED</span>
+                <span class="text-[9px] sm:text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-mono shrink-0">LIVE FEED</span>
             </div>
-            <div id="cases-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+            <div id="cases-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4"></div>
         </section>
 
         <!-- ============ LOGISTICS PROTOCOL ============ -->
-        <section class="mt-8 bg-[#161616] p-5 rounded-xl border border-gray-800">
-            <div class="flex items-end justify-between mb-5">
-                <div>
-                    <h2 class="text-lg font-bold uppercase gold-text tracking-widest">Logistics Protocol</h2>
-                    <p class="text-xs text-gray-500 mt-1">End-to-end dispatch chain — from depot intake to beneficiary handover.</p>
+        <section class="mt-6 sm:mt-8 bg-[#161616] p-3 sm:p-5 rounded-xl border border-gray-800">
+            <div class="flex items-end justify-between mb-4 sm:mb-5 gap-2">
+                <div class="min-w-0">
+                    <h2 class="text-base sm:text-lg font-bold uppercase gold-text tracking-widest">Logistics Protocol</h2>
+                    <p class="text-[11px] sm:text-xs text-gray-500 mt-1">End-to-end dispatch chain — from depot intake to beneficiary handover.</p>
                 </div>
-                <span class="text-[10px] bg-green-900/40 text-green-400 border border-green-800 px-2 py-1 rounded font-mono">CHAIN INTACT</span>
+                <span class="text-[9px] sm:text-[10px] bg-green-900/40 text-green-400 border border-green-800 px-2 py-1 rounded font-mono shrink-0">CHAIN INTACT</span>
             </div>
 
             <!-- Pipeline stages -->
-            <div id="logistics-pipeline" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6"></div>
+            <div id="logistics-pipeline" class="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3 mb-5 sm:mb-6"></div>
 
             <!-- Active dispatches table -->
             <div class="border-t border-gray-800 pt-4">
@@ -280,13 +285,13 @@
         </section>
 
         <!-- ============ DONATION INVENTORY ============ -->
-        <section class="mt-8">
-            <div class="flex items-end justify-between mb-4">
-                <div>
-                    <h2 class="text-lg font-bold uppercase gold-text tracking-widest">Donation Items Inventory</h2>
-                    <p class="text-xs text-gray-500 mt-1">Stock replenished, dispatched and delivered — fully traceable.</p>
+        <section class="mt-6 sm:mt-8">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-3 sm:mb-4 gap-3">
+                <div class="min-w-0">
+                    <h2 class="text-base sm:text-lg font-bold uppercase gold-text tracking-widest">Donation Items Inventory</h2>
+                    <p class="text-[11px] sm:text-xs text-gray-500 mt-1">Stock replenished, dispatched and delivered — fully traceable.</p>
                 </div>
-                <div class="flex gap-2 text-[10px] font-mono">
+                <div class="flex flex-wrap gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] font-mono">
                     <span class="px-2 py-1 rounded bg-blue-900/30 text-blue-300 border border-blue-800">REPLENISHED</span>
                     <span class="px-2 py-1 rounded bg-yellow-900/30 text-yellow-300 border border-yellow-800">IN STORE</span>
                     <span class="px-2 py-1 rounded bg-green-900/30 text-green-300 border border-green-800">DONATED</span>
@@ -295,15 +300,15 @@
 
             <div class="bg-[#161616] rounded-xl border border-gray-800 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-xs sm:text-sm">
                         <thead>
-                            <tr class="text-left text-gray-500 uppercase text-[10px] tracking-widest border-b border-gray-800 bg-black/40">
-                                <th class="py-3 px-4">Item</th>
-                                <th class="py-3 px-4 text-right">Replenished</th>
-                                <th class="py-3 px-4 text-right">In Store</th>
-                                <th class="py-3 px-4 text-right">Donated</th>
-                                <th class="py-3 px-4">Last Drop-Off</th>
-                                <th class="py-3 px-4">Date</th>
+                            <tr class="text-left text-gray-500 uppercase text-[9px] sm:text-[10px] tracking-widest border-b border-gray-800 bg-black/40">
+                                <th class="py-3 px-3 sm:px-4">Item</th>
+                                <th class="py-3 px-2 sm:px-4 text-right">Replenished</th>
+                                <th class="py-3 px-2 sm:px-4 text-right">In Store</th>
+                                <th class="py-3 px-2 sm:px-4 text-right">Donated</th>
+                                <th class="py-3 px-4 hidden md:table-cell">Last Drop-Off</th>
+                                <th class="py-3 px-4 hidden lg:table-cell">Date</th>
                             </tr>
                         </thead>
                         <tbody id="inventory-rows"></tbody>
@@ -506,7 +511,7 @@
                         <p class="text-[11px] text-gray-400 truncate">${v.detail}</p>
                     </div>
                 </div>
-                <div class="flex gap-2 mt-2 ml-[60px]">
+                <div class="flex gap-2 mt-2 sm:ml-[60px]">
                     <button data-locate="${v.id}" class="flex-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded bg-yellow-500/15 text-yellow-400 border border-yellow-500/40 hover:bg-yellow-500 hover:text-black transition">
                         <i class="fa-solid fa-location-crosshairs mr-1"></i>Locate on Map
                     </button>
@@ -754,19 +759,22 @@
         const fmt = n => n.toLocaleString('en-KE');
         document.getElementById('inventory-rows').innerHTML = inventory.map((i, idx) => `
             <tr class="border-b border-gray-900 hover:bg-black/30 ${idx % 2 ? 'bg-black/10' : ''}">
-                <td class="py-3 px-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded bg-yellow-500/15 border border-yellow-500/40 text-yellow-400 flex items-center justify-center">
-                            <i class="fa-solid ${i.icon} text-xs"></i>
+                <td class="py-3 px-3 sm:px-4">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded bg-yellow-500/15 border border-yellow-500/40 text-yellow-400 flex items-center justify-center">
+                            <i class="fa-solid ${i.icon} text-[10px] sm:text-xs"></i>
                         </div>
-                        <span class="font-medium">${i.item}</span>
+                        <div class="min-w-0">
+                            <span class="font-medium block truncate">${i.item}</span>
+                            <span class="md:hidden text-[10px] text-gray-500 font-mono"><i class="fa-solid fa-location-dot mr-1"></i>${i.dropoff} · ${i.date}</span>
+                        </div>
                     </div>
                 </td>
-                <td class="py-3 px-4 text-right font-mono text-blue-300">${fmt(i.replenished)}</td>
-                <td class="py-3 px-4 text-right font-mono text-yellow-300">${fmt(i.store)}</td>
-                <td class="py-3 px-4 text-right font-mono text-green-300">${fmt(i.donated)}</td>
-                <td class="py-3 px-4 text-xs text-gray-300"><i class="fa-solid fa-location-dot text-gray-500 mr-1"></i>${i.dropoff}</td>
-                <td class="py-3 px-4 text-xs font-mono text-gray-400">${i.date}</td>
+                <td class="py-3 px-2 sm:px-4 text-right font-mono text-blue-300">${fmt(i.replenished)}</td>
+                <td class="py-3 px-2 sm:px-4 text-right font-mono text-yellow-300">${fmt(i.store)}</td>
+                <td class="py-3 px-2 sm:px-4 text-right font-mono text-green-300">${fmt(i.donated)}</td>
+                <td class="py-3 px-4 text-xs text-gray-300 hidden md:table-cell"><i class="fa-solid fa-location-dot text-gray-500 mr-1"></i>${i.dropoff}</td>
+                <td class="py-3 px-4 text-xs font-mono text-gray-400 hidden lg:table-cell">${i.date}</td>
             </tr>
         `).join('');
     </script>
