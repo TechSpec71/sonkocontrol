@@ -6,26 +6,119 @@
     <title>SRT | Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
     <style>
         body { background-color: #0a0a0a; color: #e5e5e5; }
         .gold-border { border-color: #FFD700; }
         .gold-text { color: #FFD700; }
         .gold-bg { background-color: #FFD700; }
-        #map { height: 500px; width: 100%; border-radius: 12px; filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-        .pulsing-marker {
-            width: 12px; height: 12px; background: #FFD700; border-radius: 50%;
-            box-shadow: 0 0 0 rgba(255, 215, 0, 0.4); animation: pulse 2s infinite;
+
+        #map { height: 560px; width: 100%; border-radius: 12px; overflow: hidden; }
+
+        /* Vehicle markers — small "model car" style chips floating above the city */
+        .vehicle-marker {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            cursor: pointer;
+            transform: translateY(-6px);
+            filter: drop-shadow(0 8px 8px rgba(0,0,0,0.55));
+            transition: transform 0.25s ease;
         }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
+        .vehicle-marker:hover { transform: translateY(-10px) scale(1.08); }
+        .vehicle-marker img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        .vehicle-marker .ground-shadow {
+            position: absolute;
+            left: 50%;
+            bottom: -4px;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 8px;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+        }
+        .vehicle-marker .pulse-ring {
+            position: absolute;
+            inset: auto 50% -2px 50%;
+            transform: translate(-50%, 0);
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.55);
+            animation: pulse 2.2s infinite;
+        }
+        .vehicle-marker.red .pulse-ring { background: rgba(239, 68, 68, 0.6); }
+        .vehicle-marker.blue .pulse-ring { background: rgba(96, 165, 250, 0.6); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 16px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        /* Popup tweaks */
+        .maplibregl-popup-content {
+            background: #161616;
+            color: #e5e5e5;
+            border: 1px solid #FFD700;
+            border-radius: 8px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 11px;
+            padding: 8px 12px;
+        }
+        .maplibregl-popup-tip { display: none; }
+        .maplibregl-ctrl-group { background: #161616 !important; }
+        .maplibregl-ctrl-group button { filter: invert(1); }
+
+        /* Sonko portrait chip */
+        .sonko-chip {
+            width: 44px; height: 44px;
+            border-radius: 9999px;
+            border: 2px solid #FFD700;
+            background: #1a1a1a;
+            overflow: hidden;
+            box-shadow: 0 0 12px rgba(255,215,0,0.35);
+        }
+        .sonko-chip img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 12px; left: 12px;
+            background: rgba(15,15,15,0.78);
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-family: ui-monospace, monospace;
+            font-size: 10px;
+            color: #9ca3af;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            backdrop-filter: blur(6px);
+        }
+        .map-overlay .dot {
+            display:inline-block; width:6px; height:6px; border-radius:50%;
+            background:#22c55e; margin-right:6px; animation: blink 1.2s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body class="font-sans">
 
-    <nav class="border-b border-gray-800 p-4 flex justify-between items-center bg-[#111]">
-        <div class="flex items-center space-x-2">
+    <nav class="border-b border-gray-800 p-3 flex justify-between items-center bg-[#111]">
+        <div class="flex items-center space-x-3">
             <div class="w-10 h-10 gold-bg rounded-full flex items-center justify-center text-black font-bold">SRT</div>
             <h1 class="text-xl font-bold tracking-tighter gold-text">MHE. SONKO COMMAND</h1>
+            <div class="sonko-chip" title="Mhe. Mike Sonko">
+                <img src="img/sonko.png" alt="Mike Sonko" />
+            </div>
         </div>
         <div class="hidden md:block text-xs font-mono text-gray-500 uppercase tracking-widest">
             System Status: <span class="text-green-500">Secure & Active</span>
@@ -55,26 +148,38 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 bg-[#161616] p-4 rounded-xl border border-gray-800">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-sm font-bold uppercase tracking-widest">Live GPS Radar: Nairobi Area</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest">Live GPS Radar: Nairobi 3D</h3>
                     <span class="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">ENCRYPTED STREAMING</span>
                 </div>
-                <div id="map"></div>
+                <div class="relative">
+                    <div id="map"></div>
+                    <div class="map-overlay"><span class="dot"></span>3D Street View · Nairobi & Environs</div>
+                </div>
             </div>
 
             <div class="bg-[#161616] p-4 rounded-xl border border-gray-800">
                 <h3 class="text-sm font-bold mb-4 uppercase gold-text">Active Operations</h3>
                 <div class="space-y-4">
-                    <div class="border-l-2 border-yellow-500 pl-3 py-1">
-                        <p class="text-xs font-bold uppercase">Water Bowser #4</p>
-                        <p class="text-xs text-gray-400">Mathare Area 4 - Offloading</p>
+                    <div class="border-l-2 border-yellow-500 pl-3 py-1 flex items-center gap-3">
+                        <img src="img/bowser.png" class="w-12 h-12 object-contain" alt="bowser"/>
+                        <div>
+                            <p class="text-xs font-bold uppercase">Water Bowser #4</p>
+                            <p class="text-xs text-gray-400">Mathare Area 4 - Offloading</p>
+                        </div>
                     </div>
-                    <div class="border-l-2 border-red-500 pl-3 py-1">
-                        <p class="text-xs font-bold uppercase">Ambulance #SRT-01</p>
-                        <p class="text-xs text-gray-400">En Route: Upper Hill Office</p>
+                    <div class="border-l-2 border-red-500 pl-3 py-1 flex items-center gap-3">
+                        <img src="img/ambulance.png" class="w-12 h-12 object-contain" alt="ambulance"/>
+                        <div>
+                            <p class="text-xs font-bold uppercase">Ambulance #SRT-01</p>
+                            <p class="text-xs text-gray-400">En Route: Upper Hill Office</p>
+                        </div>
                     </div>
-                    <div class="border-l-2 border-blue-500 pl-3 py-1">
-                        <p class="text-xs font-bold uppercase">Relief Truck #12</p>
-                        <p class="text-xs text-gray-400">Isiolo Empowerment Drive - Loading</p>
+                    <div class="border-l-2 border-blue-500 pl-3 py-1 flex items-center gap-3">
+                        <img src="img/raptor.png" class="w-12 h-12 object-contain" alt="raptor"/>
+                        <div>
+                            <p class="text-xs font-bold uppercase">Relief Truck #12</p>
+                            <p class="text-xs text-gray-400">Isiolo Empowerment Drive - Loading</p>
+                        </div>
                     </div>
                 </div>
                 <button class="w-full mt-8 py-3 gold-bg text-black font-black text-sm uppercase rounded shadow-2xl">
@@ -84,36 +189,189 @@
         </div>
     </main>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
     <script>
-        // Initialize Map centered on Nairobi
-        var map = L.map('map').setView([-1.286389, 36.817223], 13);
+        // Graceful fallback if the browser cannot create a WebGL context (e.g. some
+        // headless preview environments). Real browsers will skip this branch.
+        const _hasWebGL = (() => {
+            try {
+                const c = document.createElement('canvas');
+                return !!(c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl'));
+            } catch (_) { return false; }
+        })();
+        if (!_hasWebGL) {
+            const el = document.getElementById('map');
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+            el.style.background = 'linear-gradient(135deg,#111 0%,#1a1a1a 100%)';
+            el.innerHTML = '<div style="text-align:center;font-family:monospace;color:#FFD700"><div style="font-size:14px;letter-spacing:.2em">3D MAP UNAVAILABLE</div><div style="font-size:11px;color:#9ca3af;margin-top:6px">WebGL is not enabled in this environment.<br/>Open this dashboard in a normal browser tab to view the live 3D map.</div></div>';
+            throw new Error('WebGL unavailable');
+        }
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-        }).addTo(map);
-
-        // Custom Pulsing Icon
-        var pulsingIcon = L.divIcon({
-            className: 'pulsing-marker',
-            iconSize: [12, 12]
+        // 3D street view of Nairobi using MapLibre GL JS + free OpenFreeMap vector tiles.
+        // The "liberty" style includes 3D building geometry that we extrude.
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://tiles.openfreemap.org/styles/liberty',
+            center: [36.817223, -1.286389], // Nairobi CBD
+            zoom: 14.5,
+            pitch: 62,        // Tilt the camera for the 3D street-view feel
+            bearing: -22,     // Slight rotation
+            antialias: true
         });
 
-        // Add Mock Fleet Markers
-        var markers = [
-            { pos: [-1.298, 36.823], label: "SRT Ambulance 01" },
-            { pos: [-1.265, 36.800], label: "Water Bowser 04" },
-            { pos: [-1.280, 36.850], label: "Burial Aid Team" }
-        ];
+        map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 
-        markers.forEach(m => {
-            L.marker(m.pos, {icon: pulsingIcon}).addTo(map).bindPopup(m.label);
+        // Add 3D building extrusion + slow rotation once the style is ready
+        map.on('load', () => {
+            // Find the first symbol layer so we can insert buildings beneath labels
+            const layers = map.getStyle().layers;
+            let firstSymbolId;
+            for (const layer of layers) {
+                if (layer.type === 'symbol') { firstSymbolId = layer.id; break; }
+            }
+
+            // Some style versions already include a 3D buildings layer; remove it so ours wins
+            if (map.getLayer('building-3d')) map.removeLayer('building-3d');
+
+            // Add our own gold-tinted 3D building extrusion
+            map.addLayer({
+                id: 'srt-3d-buildings',
+                source: 'openmaptiles',
+                'source-layer': 'building',
+                type: 'fill-extrusion',
+                minzoom: 13,
+                paint: {
+                    'fill-extrusion-color': [
+                        'interpolate', ['linear'], ['get', 'render_height'],
+                        0, '#1f2937',
+                        20, '#2a2a2a',
+                        60, '#3a3320',
+                        120, '#4a3f1d'
+                    ],
+                    'fill-extrusion-height': [
+                        'interpolate', ['linear'], ['zoom'],
+                        13, 0,
+                        15.05, ['coalesce', ['get', 'render_height'], ['get', 'height'], 5]
+                    ],
+                    'fill-extrusion-base': [
+                        'coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0
+                    ],
+                    'fill-extrusion-opacity': 0.92
+                }
+            }, firstSymbolId);
+
+            // Add atmosphere-like sky for the horizon
+            try {
+                map.setSky({
+                    'sky-color': '#0a0a0a',
+                    'sky-horizon-blend': 0.5,
+                    'horizon-color': '#1a1a1a',
+                    'horizon-fog-blend': 0.6,
+                    'fog-color': '#0a0a0a',
+                    'fog-ground-blend': 0.05
+                });
+            } catch (_) { /* older renderers may not support setSky */ }
+
+            // Vehicles — small "model car" markers along Nairobi streets
+            const vehicles = [
+                {
+                    id: 'srt-01',
+                    name: 'Ambulance #SRT-01',
+                    img: 'img/ambulance.png',
+                    color: 'red',
+                    detail: 'En Route: Upper Hill Office',
+                    // path through Upper Hill / CBD
+                    path: [
+                        [36.8112, -1.2980],
+                        [36.8155, -1.2960],
+                        [36.8195, -1.2935],
+                        [36.8210, -1.2900],
+                        [36.8175, -1.2872],
+                        [36.8130, -1.2895],
+                        [36.8112, -1.2980]
+                    ]
+                },
+                {
+                    id: 'bowser-04',
+                    name: 'Water Bowser #4',
+                    img: 'img/bowser.png',
+                    color: 'gold',
+                    detail: 'Mathare Area 4 — Offloading',
+                    path: [
+                        [36.8612, -1.2585],
+                        [36.8650, -1.2602],
+                        [36.8688, -1.2620],
+                        [36.8712, -1.2648],
+                        [36.8688, -1.2675],
+                        [36.8645, -1.2660],
+                        [36.8612, -1.2585]
+                    ]
+                },
+                {
+                    id: 'raptor-12',
+                    name: 'Relief Truck #12 (Ford Raptor)',
+                    img: 'img/raptor.png',
+                    color: 'blue',
+                    detail: 'Isiolo Empowerment Drive — Loading',
+                    path: [
+                        [36.8205, -1.2740],
+                        [36.8240, -1.2755],
+                        [36.8278, -1.2772],
+                        [36.8305, -1.2798],
+                        [36.8278, -1.2820],
+                        [36.8240, -1.2802],
+                        [36.8205, -1.2740]
+                    ]
+                }
+            ];
+
+            // Build markers
+            const markers = vehicles.map(v => {
+                const el = document.createElement('div');
+                el.className = `vehicle-marker ${v.color}`;
+                el.innerHTML = `
+                    <div class="pulse-ring"></div>
+                    <div class="ground-shadow"></div>
+                    <img src="${v.img}" alt="${v.name}" />
+                `;
+
+                const popup = new maplibregl.Popup({ offset: 28, closeButton: false })
+                    .setHTML(`<div><div style="color:#FFD700;font-weight:700;letter-spacing:.08em">${v.name}</div><div style="color:#9ca3af;margin-top:2px">${v.detail}</div></div>`);
+
+                const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+                    .setLngLat(v.path[0])
+                    .setPopup(popup)
+                    .addTo(map);
+
+                return { v, marker, segment: 0, t: 0 };
+            });
+
+            // Smooth animation along each path
+            function lerp(a, b, t) { return a + (b - a) * t; }
+            function step() {
+                markers.forEach(m => {
+                    const path = m.v.path;
+                    const a = path[m.segment];
+                    const b = path[(m.segment + 1) % path.length];
+                    const lng = lerp(a[0], b[0], m.t);
+                    const lat = lerp(a[1], b[1], m.t);
+                    m.marker.setLngLat([lng, lat]);
+                    m.t += 0.0035; // pace
+                    if (m.t >= 1) { m.t = 0; m.segment = (m.segment + 1) % path.length; }
+                });
+                requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+
+            // Slow cinematic rotation of the camera
+            let bearing = map.getBearing();
+            setInterval(() => {
+                bearing = (bearing + 0.15) % 360;
+                map.setBearing(bearing);
+            }, 80);
         });
-
-        // Simple Animation: Simulate movement
-        setInterval(() => {
-            map.panBy([1, 1]);
-        }, 3000);
     </script>
 </body>
 </html>
