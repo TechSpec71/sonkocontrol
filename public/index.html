@@ -90,6 +90,58 @@
             object-position: 75% 35%;
         }
 
+        /* Streaming marquee banner */
+        .marquee {
+            overflow: hidden;
+            background: linear-gradient(90deg, #1a1300 0%, #2a1f00 50%, #1a1300 100%);
+            border-top: 1px solid rgba(255,215,0,0.25);
+            border-bottom: 1px solid rgba(255,215,0,0.25);
+            position: relative;
+        }
+        .marquee::before, .marquee::after {
+            content: '';
+            position: absolute; top: 0; bottom: 0; width: 60px; z-index: 2;
+            pointer-events: none;
+        }
+        .marquee::before { left: 0;  background: linear-gradient(90deg, #0a0a0a, transparent); }
+        .marquee::after  { right: 0; background: linear-gradient(270deg, #0a0a0a, transparent); }
+        .marquee-track {
+            display: inline-flex;
+            white-space: nowrap;
+            animation: marquee-scroll 22s linear infinite;
+        }
+        .marquee-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 40px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFD700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .marquee-item .heart {
+            color: #ef4444;
+            margin-left: 14px;
+            animation: heart-beat 1.1s ease-in-out infinite;
+            display: inline-block;
+        }
+        .marquee-item .sep {
+            margin: 0 28px;
+            color: rgba(255,215,0,0.35);
+        }
+        @keyframes marquee-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes heart-beat {
+            0%, 100% { transform: scale(1); }
+            25%      { transform: scale(1.25); }
+            50%      { transform: scale(0.95); }
+            75%      { transform: scale(1.15); }
+        }
+
         .map-overlay {
             position: absolute;
             top: 12px; right: 12px;
@@ -118,7 +170,7 @@
     <nav class="border-b border-gray-800 p-3 flex justify-between items-center bg-[#111]">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 gold-bg rounded-full flex items-center justify-center text-black font-bold">SRT</div>
-            <h1 class="text-xl font-bold tracking-tighter gold-text">MHE. SONKO COMMAND</h1>
+            <h1 class="text-lg font-bold tracking-tighter gold-text">MIKE SONKO CONTROL DASHBOARD</h1>
             <div class="sonko-chip" title="Mhe. Mike Sonko">
                 <img src="img/sonko.jpg" alt="Mike Sonko" />
             </div>
@@ -127,6 +179,18 @@
             System Status: <span class="text-green-500">Secure & Active</span>
         </div>
     </nav>
+
+    <!-- Streaming banner -->
+    <div class="marquee">
+        <div class="marquee-track">
+            <span class="marquee-item">Million of miles for billion of smiles <span class="heart"><i class="fa-solid fa-heart"></i></span><span class="sep">&#9670;</span></span>
+            <span class="marquee-item">Million of miles for billion of smiles <span class="heart"><i class="fa-solid fa-heart"></i></span><span class="sep">&#9670;</span></span>
+            <span class="marquee-item">Million of miles for billion of smiles <span class="heart"><i class="fa-solid fa-heart"></i></span><span class="sep">&#9670;</span></span>
+            <span class="marquee-item">Million of miles for billion of smiles <span class="heart"><i class="fa-solid fa-heart"></i></span><span class="sep">&#9670;</span></span>
+            <span class="marquee-item">Million of miles for billion of smiles <span class="heart"><i class="fa-solid fa-heart"></i></span><span class="sep">&#9670;</span></span>
+            <span class="marquee-item">Million of miles for billion of smiles <span class="heart"><i class="fa-solid fa-heart"></i></span><span class="sep">&#9670;</span></span>
+        </div>
+    </div>
 
     <main class="p-6 max-w-7xl mx-auto">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
