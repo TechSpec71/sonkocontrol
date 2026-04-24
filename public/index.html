@@ -162,35 +162,33 @@
 
             <div class="bg-[#161616] p-4 rounded-xl border border-gray-800">
                 <h3 class="text-sm font-bold mb-4 uppercase gold-text">Active Operations</h3>
-                <div class="space-y-4">
-                    <div class="border-l-2 border-yellow-500 pl-3 py-1 flex items-center gap-3">
-                        <img src="img/bowser.png" class="w-12 h-12 object-contain" alt="bowser"/>
-                        <div>
-                            <p class="text-xs font-bold uppercase">Water Bowser #4</p>
-                            <p class="text-xs text-gray-400">Mathare Area 4 - Offloading</p>
-                        </div>
-                    </div>
-                    <div class="border-l-2 border-red-500 pl-3 py-1 flex items-center gap-3">
-                        <img src="img/ambulance.png" class="w-12 h-12 object-contain" alt="ambulance"/>
-                        <div>
-                            <p class="text-xs font-bold uppercase">Ambulance #SRT-01</p>
-                            <p class="text-xs text-gray-400">En Route: Upper Hill Office</p>
-                        </div>
-                    </div>
-                    <div class="border-l-2 border-blue-500 pl-3 py-1 flex items-center gap-3">
-                        <img src="img/raptor.png" class="w-12 h-12 object-contain" alt="raptor"/>
-                        <div>
-                            <p class="text-xs font-bold uppercase">Relief Truck #12</p>
-                            <p class="text-xs text-gray-400">Isiolo Empowerment Drive - Loading</p>
-                        </div>
-                    </div>
-                </div>
+                <div id="ops-list" class="space-y-3"></div>
                 <button class="w-full mt-8 py-3 gold-bg text-black font-black text-sm uppercase rounded shadow-2xl">
                     Push Daily Report to Mheshimiwa
                 </button>
             </div>
         </div>
     </main>
+
+    <!-- Details modal -->
+    <div id="details-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
+        <div class="bg-[#161616] border border-yellow-500/50 rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                    <img id="modal-img" src="" class="w-14 h-14 object-contain" alt=""/>
+                    <div>
+                        <h3 id="modal-title" class="text-base font-bold gold-text uppercase tracking-wider"></h3>
+                        <p id="modal-detail" class="text-xs text-gray-400 mt-1"></p>
+                    </div>
+                </div>
+                <button id="modal-close" class="text-gray-400 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="border-t border-gray-800 pt-4">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Team On Board</p>
+                <ul id="modal-team" class="space-y-2 font-mono text-xs"></ul>
+            </div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -223,27 +221,17 @@
 
         const vehicles = [
             {
-                id: 'srt-01',
-                name: 'Ambulance #SRT-01',
-                img: 'img/ambulance.png',
-                color: 'red',
-                detail: 'En Route: Upper Hill Office',
-                path: [
-                    [-1.2980, 36.8112],
-                    [-1.2960, 36.8155],
-                    [-1.2935, 36.8195],
-                    [-1.2900, 36.8210],
-                    [-1.2872, 36.8175],
-                    [-1.2895, 36.8130],
-                    [-1.2980, 36.8112]
-                ]
-            },
-            {
                 id: 'bowser-04',
                 name: 'Water Bowser #4',
                 img: 'img/bowser.png',
                 color: 'gold',
+                accent: 'border-yellow-500',
                 detail: 'Mathare Area 4 — Offloading',
+                team: [
+                    { role: 'Driver',     name: 'Joseph Mwangi',      idNo: 'SRT-D-0418' },
+                    { role: 'Co-Driver',  name: 'Hassan Abdi',        idNo: 'SRT-D-0420' },
+                    { role: 'Field Lead', name: 'Grace Wambui',       idNo: 'SRT-F-0307' }
+                ],
                 path: [
                     [-1.2585, 36.8612],
                     [-1.2602, 36.8650],
@@ -255,11 +243,40 @@
                 ]
             },
             {
+                id: 'srt-01',
+                name: 'Ambulance #SRT-01',
+                img: 'img/ambulance.png',
+                color: 'red',
+                accent: 'border-red-500',
+                detail: 'En Route: Upper Hill Office',
+                team: [
+                    { role: 'Paramedic',     name: 'Dr. Anne Kariuki',   idNo: 'SRT-M-0101' },
+                    { role: 'EMT',           name: 'Brian Otieno',       idNo: 'SRT-M-0114' },
+                    { role: 'Driver',        name: 'Peter Njoroge',      idNo: 'SRT-D-0205' }
+                ],
+                path: [
+                    [-1.2980, 36.8112],
+                    [-1.2960, 36.8155],
+                    [-1.2935, 36.8195],
+                    [-1.2900, 36.8210],
+                    [-1.2872, 36.8175],
+                    [-1.2895, 36.8130],
+                    [-1.2980, 36.8112]
+                ]
+            },
+            {
                 id: 'raptor-12',
-                name: 'Relief Truck #12 (Ford Raptor)',
+                name: 'Relief Truck #12',
                 img: 'img/raptor.png',
                 color: 'blue',
+                accent: 'border-blue-500',
                 detail: 'Isiolo Empowerment Drive — Loading',
+                team: [
+                    { role: 'Convoy Lead', name: 'Samuel Kiprono',  idNo: 'SRT-L-0033' },
+                    { role: 'Driver',      name: 'Mohamed Ali',     idNo: 'SRT-D-0511' },
+                    { role: 'Logistics',   name: 'Faith Akinyi',    idNo: 'SRT-L-0078' },
+                    { role: 'Security',    name: 'Daniel Kimani',   idNo: 'SRT-S-0290' }
+                ],
                 path: [
                     [-1.2740, 36.8205],
                     [-1.2755, 36.8240],
@@ -272,12 +289,85 @@
             }
         ];
 
+        // Build markers
         const markers = vehicles.map(v => {
             const m = L.marker(v.path[0], { icon: vehicleIcon(v.img, v.color) })
                 .addTo(map)
                 .bindPopup(`<div style="color:#FFD700;font-weight:700;letter-spacing:.08em">${v.name}</div><div style="color:#9ca3af;margin-top:2px">${v.detail}</div>`);
             return { v, marker: m, segment: 0, t: 0 };
         });
+
+        // Helper map: vehicle id → tracked marker entry
+        const markerById = Object.fromEntries(markers.map(m => [m.v.id, m]));
+
+        // Render the Active Operations list dynamically so it stays in sync with the map data
+        const opsList = document.getElementById('ops-list');
+        opsList.innerHTML = vehicles.map(v => `
+            <div class="border-l-2 ${v.accent} pl-3 py-2">
+                <div class="flex items-center gap-3">
+                    <img src="${v.img}" class="w-12 h-12 object-contain" alt="${v.name}"/>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold uppercase truncate">${v.name}</p>
+                        <p class="text-[11px] text-gray-400 truncate">${v.detail}</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 mt-2 ml-[60px]">
+                    <button data-locate="${v.id}" class="flex-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded bg-yellow-500/15 text-yellow-400 border border-yellow-500/40 hover:bg-yellow-500 hover:text-black transition">
+                        <i class="fa-solid fa-location-crosshairs mr-1"></i>Locate on Map
+                    </button>
+                    <button data-details="${v.id}" class="flex-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 transition">
+                        <i class="fa-solid fa-users mr-1"></i>Details
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Locate on Map: pan + zoom to the vehicle and open its popup
+        opsList.addEventListener('click', e => {
+            const locateBtn = e.target.closest('[data-locate]');
+            const detailBtn = e.target.closest('[data-details]');
+            if (locateBtn) {
+                const entry = markerById[locateBtn.dataset.locate];
+                if (!entry) return;
+                const ll = entry.marker.getLatLng();
+                map.flyTo(ll, 16, { duration: 1.2 });
+                map.once('moveend', () => entry.marker.openPopup());
+                // Brief flash so the user can see it once the camera lands
+                setTimeout(() => {
+                    const el = entry.marker.getElement();
+                    if (!el) return;
+                    el.animate(
+                        [{ transform: 'scale(1)' }, { transform: 'scale(1.4)' }, { transform: 'scale(1)' }],
+                        { duration: 700, iterations: 2 }
+                    );
+                }, 1300);
+            } else if (detailBtn) {
+                const v = vehicles.find(x => x.id === detailBtn.dataset.details);
+                if (!v) return;
+                document.getElementById('modal-img').src = v.img;
+                document.getElementById('modal-title').textContent = v.name;
+                document.getElementById('modal-detail').textContent = v.detail;
+                document.getElementById('modal-team').innerHTML = v.team.map(t => `
+                    <li class="flex items-center justify-between bg-[#0f0f0f] border border-gray-800 rounded px-3 py-2">
+                        <div>
+                            <div class="text-[10px] uppercase tracking-widest text-yellow-500">${t.role}</div>
+                            <div class="text-gray-200">${t.name}</div>
+                        </div>
+                        <div class="text-[10px] text-gray-500 tracking-wider">${t.idNo}</div>
+                    </li>
+                `).join('');
+                const modal = document.getElementById('details-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        });
+
+        // Modal close handlers
+        const modal = document.getElementById('details-modal');
+        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
         // Smoothly animate each marker along its loop
         function lerp(a, b, t) { return a + (b - a) * t; }
