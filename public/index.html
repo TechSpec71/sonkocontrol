@@ -168,6 +168,86 @@
                 </button>
             </div>
         </div>
+
+        <!-- ============ FOLLOW-UP CASES ============ -->
+        <section class="mt-8">
+            <div class="flex items-end justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-bold uppercase gold-text tracking-widest">Follow-Up Cases</h2>
+                    <p class="text-xs text-gray-500 mt-1">Beneficiary status updates from the field — verified by SRT case officers.</p>
+                </div>
+                <span class="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-mono">LIVE FEED</span>
+            </div>
+            <div id="cases-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- ============ LOGISTICS PROTOCOL ============ -->
+        <section class="mt-8 bg-[#161616] p-5 rounded-xl border border-gray-800">
+            <div class="flex items-end justify-between mb-5">
+                <div>
+                    <h2 class="text-lg font-bold uppercase gold-text tracking-widest">Logistics Protocol</h2>
+                    <p class="text-xs text-gray-500 mt-1">End-to-end dispatch chain — from depot intake to beneficiary handover.</p>
+                </div>
+                <span class="text-[10px] bg-green-900/40 text-green-400 border border-green-800 px-2 py-1 rounded font-mono">CHAIN INTACT</span>
+            </div>
+
+            <!-- Pipeline stages -->
+            <div id="logistics-pipeline" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6"></div>
+
+            <!-- Active dispatches table -->
+            <div class="border-t border-gray-800 pt-4">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Active Dispatches</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs font-mono">
+                        <thead>
+                            <tr class="text-left text-gray-500 uppercase text-[10px] border-b border-gray-800">
+                                <th class="py-2 pr-3">Manifest</th>
+                                <th class="py-2 pr-3">Origin</th>
+                                <th class="py-2 pr-3">Destination</th>
+                                <th class="py-2 pr-3">Vehicle</th>
+                                <th class="py-2 pr-3">ETA</th>
+                                <th class="py-2 pr-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dispatch-rows"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ DONATION INVENTORY ============ -->
+        <section class="mt-8">
+            <div class="flex items-end justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-bold uppercase gold-text tracking-widest">Donation Items Inventory</h2>
+                    <p class="text-xs text-gray-500 mt-1">Stock replenished, dispatched and delivered — fully traceable.</p>
+                </div>
+                <div class="flex gap-2 text-[10px] font-mono">
+                    <span class="px-2 py-1 rounded bg-blue-900/30 text-blue-300 border border-blue-800">REPLENISHED</span>
+                    <span class="px-2 py-1 rounded bg-yellow-900/30 text-yellow-300 border border-yellow-800">IN STORE</span>
+                    <span class="px-2 py-1 rounded bg-green-900/30 text-green-300 border border-green-800">DONATED</span>
+                </div>
+            </div>
+
+            <div class="bg-[#161616] rounded-xl border border-gray-800 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-gray-500 uppercase text-[10px] tracking-widest border-b border-gray-800 bg-black/40">
+                                <th class="py-3 px-4">Item</th>
+                                <th class="py-3 px-4 text-right">Replenished</th>
+                                <th class="py-3 px-4 text-right">In Store</th>
+                                <th class="py-3 px-4 text-right">Donated</th>
+                                <th class="py-3 px-4">Last Drop-Off</th>
+                                <th class="py-3 px-4">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-rows"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Details modal -->
@@ -436,6 +516,195 @@
             requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
+
+        /* =========================================================
+           FOLLOW-UP CASES — beneficiary stories from the field
+           ========================================================= */
+        const cases = [
+            {
+                name: 'Mama Aisha Wanjiku',
+                age: 64,
+                location: 'Mathare 4B',
+                story: 'Lost her shanty to the April floods. SRT relocated her family of 6 to safer ground & provided 2 weeks of food rations.',
+                status: 'STABLE',
+                statusColor: 'green',
+                officer: 'Officer L. Achieng',
+                date: '24 Apr 2026',
+                action: 'Permanent housing — shortlisted for NEDP relief estate'
+            },
+            {
+                name: 'Brian Otieno',
+                age: 9,
+                location: 'Kibera, Line Saba',
+                story: 'Hit by a boda-boda on Ngong Road. Ambulance #SRT-01 evacuated him to Kenyatta National in 11 min. Surgery successful.',
+                status: 'RECOVERING',
+                statusColor: 'yellow',
+                officer: 'Paramedic G. Wanjiru',
+                date: '23 Apr 2026',
+                action: 'Medical bill cleared — school fees pledge issued'
+            },
+            {
+                name: 'Jacinta Mwende & 3 children',
+                age: 38,
+                location: 'Huruma Estate',
+                story: 'Single mother evicted from her room after losing her kibanda business. SRT cleared 4 months rent arrears and restocked her stall.',
+                status: 'RESOLVED',
+                statusColor: 'green',
+                officer: 'Case Officer P. Karanja',
+                date: '22 Apr 2026',
+                action: 'Business mentorship — monthly check-ins by SRT'
+            },
+            {
+                name: 'Mzee Kiprotich Arap Bett',
+                age: 78,
+                location: 'Kayole Junction',
+                story: 'Diabetic veteran found collapsed at the matatu stage. Stabilized on-scene, glucose monitor + 3-month insulin supply provided.',
+                status: 'MONITORING',
+                statusColor: 'yellow',
+                officer: 'EMT D. Njoroge',
+                date: '21 Apr 2026',
+                action: 'Weekly home visit by SRT medic team'
+            },
+            {
+                name: 'Faith Akinyi',
+                age: 22,
+                location: 'Dandora Phase 2',
+                story: 'Fire gutted her tailoring kiosk. Fire Engine #07 contained the blaze in 18 min. SRT replaced her sewing machine and stock.',
+                status: 'BACK TO WORK',
+                statusColor: 'green',
+                officer: 'Capt. J. Wekesa',
+                date: '20 Apr 2026',
+                action: 'Trauma counselling — referred to NEDP wellness desk'
+            },
+            {
+                name: 'Githurai Bus #KCB 442G',
+                age: null,
+                location: 'Thika Superhighway',
+                story: 'Matatu broke down with 32 passengers stranded at midnight. Breakdown Truck #03 towed it to Roysambu, passengers ferried home safely.',
+                status: 'CLOSED',
+                statusColor: 'gray',
+                officer: 'Recovery Lead P. Kamau',
+                date: '19 Apr 2026',
+                action: 'Driver enrolled in SRT defensive driving course'
+            }
+        ];
+
+        const statusStyles = {
+            green:  'bg-green-900/30 text-green-300 border-green-700',
+            yellow: 'bg-yellow-900/30 text-yellow-300 border-yellow-700',
+            red:    'bg-red-900/30 text-red-300 border-red-700',
+            gray:   'bg-gray-800 text-gray-400 border-gray-700'
+        };
+
+        document.getElementById('cases-list').innerHTML = cases.map(c => `
+            <div class="bg-[#161616] border border-gray-800 rounded-xl p-4 hover:border-yellow-500/50 transition">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500/30 to-yellow-700/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold">${c.name}${c.age ? `<span class="text-gray-500 font-normal">, ${c.age}</span>` : ''}</p>
+                            <p class="text-[11px] text-gray-500"><i class="fa-solid fa-location-dot mr-1"></i>${c.location}</p>
+                        </div>
+                    </div>
+                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded border ${statusStyles[c.statusColor]}">${c.status}</span>
+                </div>
+                <p class="text-xs text-gray-300 leading-relaxed mb-3">${c.story}</p>
+                <div class="border-t border-gray-800 pt-3 space-y-1">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Next Step</p>
+                    <p class="text-[11px] text-yellow-400">${c.action}</p>
+                </div>
+                <div class="flex items-center justify-between mt-3 text-[10px] font-mono text-gray-500">
+                    <span><i class="fa-solid fa-user-shield mr-1"></i>${c.officer}</span>
+                    <span><i class="fa-regular fa-calendar mr-1"></i>${c.date}</span>
+                </div>
+            </div>
+        `).join('');
+
+        /* =========================================================
+           LOGISTICS PROTOCOL — pipeline + active dispatches
+           ========================================================= */
+        const pipeline = [
+            { stage: 'Intake',     icon: 'fa-warehouse',        count: 14, label: 'Donations received today',     color: 'blue' },
+            { stage: 'Verified',   icon: 'fa-clipboard-check',  count: 12, label: 'Inspected & catalogued',        color: 'yellow' },
+            { stage: 'Loaded',     icon: 'fa-truck-ramp-box',   count:  9, label: 'On dispatch trucks',            color: 'yellow' },
+            { stage: 'In Transit', icon: 'fa-truck-fast',       count:  5, label: 'Live on Nairobi corridors',     color: 'green' },
+            { stage: 'Delivered',  icon: 'fa-handshake-angle',  count:  7, label: 'Signed off by beneficiaries',   color: 'green' }
+        ];
+        const pipeColors = {
+            blue:   'border-blue-700/60 bg-blue-900/15 text-blue-300',
+            yellow: 'border-yellow-700/60 bg-yellow-900/15 text-yellow-300',
+            green:  'border-green-700/60 bg-green-900/15 text-green-300'
+        };
+        document.getElementById('logistics-pipeline').innerHTML = pipeline.map((p, i) => `
+            <div class="relative rounded-lg border ${pipeColors[p.color]} p-3">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fa-solid ${p.icon}"></i>
+                    <span class="text-[10px] uppercase tracking-widest font-bold">${p.stage}</span>
+                </div>
+                <div class="text-2xl font-bold text-white">${p.count}</div>
+                <p class="text-[10px] text-gray-400 mt-1 leading-snug">${p.label}</p>
+                ${i < pipeline.length - 1 ? '<i class="fa-solid fa-chevron-right hidden md:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-700 text-xs bg-[#161616] px-1"></i>' : ''}
+            </div>
+        `).join('');
+
+        const dispatches = [
+            { id: 'MAN-2061', origin: 'SRT Depot — Mlolongo',   dest: 'Mathare 4B Rescue Pt.',  vehicle: 'Bowser #4',     eta: '14 min',  status: 'IN TRANSIT', color: 'green'  },
+            { id: 'MAN-2062', origin: 'Sonko Foundation HQ',    dest: 'Huruma Community Hall',  vehicle: 'Relief Truck #12', eta: '32 min', status: 'LOADING',    color: 'yellow' },
+            { id: 'MAN-2063', origin: 'Industrial Area Stores', dest: 'Dandora Fire Site',      vehicle: 'Fire Engine #07',  eta: 'On site', status: 'DELIVERING', color: 'green'  },
+            { id: 'MAN-2064', origin: 'Mlolongo Depot',         dest: 'Kibera Line Saba',       vehicle: 'Pickup #SRT-09',   eta: '08 min', status: 'IN TRANSIT', color: 'green'  },
+            { id: 'MAN-2065', origin: 'Westlands Warehouse',    dest: 'Kayole Phase 1',         vehicle: 'Convoy #SRT-22',   eta: '47 min', status: 'QUEUED',     color: 'gray'   },
+            { id: 'MAN-2060', origin: 'SRT Depot — Mlolongo',   dest: 'Upper Hill Office',      vehicle: 'Ambulance #SRT-01','eta': '—',   status: 'DELIVERED',  color: 'gray'   }
+        ];
+        const dispStyles = {
+            green:  'bg-green-900/30 text-green-300 border-green-700',
+            yellow: 'bg-yellow-900/30 text-yellow-300 border-yellow-700',
+            gray:   'bg-gray-800 text-gray-400 border-gray-700'
+        };
+        document.getElementById('dispatch-rows').innerHTML = dispatches.map(d => `
+            <tr class="border-b border-gray-900 hover:bg-black/30">
+                <td class="py-2 pr-3 gold-text">${d.id}</td>
+                <td class="py-2 pr-3 text-gray-300">${d.origin}</td>
+                <td class="py-2 pr-3 text-gray-300">${d.dest}</td>
+                <td class="py-2 pr-3 text-gray-400">${d.vehicle}</td>
+                <td class="py-2 pr-3 text-white">${d.eta}</td>
+                <td class="py-2 pr-3"><span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded border ${dispStyles[d.color]}">${d.status}</span></td>
+            </tr>
+        `).join('');
+
+        /* =========================================================
+           DONATION ITEMS INVENTORY
+           ========================================================= */
+        const inventory = [
+            { item: 'Maize Flour (2kg)',       icon: 'fa-wheat-awn',    replenished: 5000, store: 1840, donated: 3160, dropoff: 'Mathare 4B Hall',         date: '24 Apr 2026' },
+            { item: 'Drinking Water (500ml)',  icon: 'fa-bottle-water', replenished: 12000, store: 4220, donated: 7780, dropoff: 'Huruma Estate',          date: '24 Apr 2026' },
+            { item: 'Cooking Oil (1L)',        icon: 'fa-droplet',      replenished: 1800, store:  600, donated: 1200, dropoff: 'Kibera Line Saba',        date: '23 Apr 2026' },
+            { item: 'Mattresses (3x6)',        icon: 'fa-bed',          replenished:  450, store:  120, donated:  330, dropoff: 'Dandora Phase 2',         date: '23 Apr 2026' },
+            { item: 'School Books (set)',      icon: 'fa-book',         replenished:  800, store:  515, donated:  285, dropoff: 'St. Teresa Primary',      date: '22 Apr 2026' },
+            { item: 'Sanitary Pads (pack)',    icon: 'fa-heart',        replenished: 2000, store:  900, donated: 1100, dropoff: 'Kayole Girls Centre',     date: '22 Apr 2026' },
+            { item: 'Blankets (heavy)',        icon: 'fa-mitten',       replenished:  650, store:  210, donated:  440, dropoff: 'Mathare North Camp',      date: '21 Apr 2026' },
+            { item: 'First-Aid Kits',          icon: 'fa-kit-medical',  replenished:  300, store:  175, donated:  125, dropoff: 'SRT Mobile Clinic',       date: '20 Apr 2026' },
+            { item: 'Reusable Face Masks',     icon: 'fa-mask-face',    replenished: 4000, store: 2150, donated: 1850, dropoff: 'Industrial Area Schools', date: '19 Apr 2026' }
+        ];
+        const fmt = n => n.toLocaleString('en-KE');
+        document.getElementById('inventory-rows').innerHTML = inventory.map((i, idx) => `
+            <tr class="border-b border-gray-900 hover:bg-black/30 ${idx % 2 ? 'bg-black/10' : ''}">
+                <td class="py-3 px-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-yellow-500/15 border border-yellow-500/40 text-yellow-400 flex items-center justify-center">
+                            <i class="fa-solid ${i.icon} text-xs"></i>
+                        </div>
+                        <span class="font-medium">${i.item}</span>
+                    </div>
+                </td>
+                <td class="py-3 px-4 text-right font-mono text-blue-300">${fmt(i.replenished)}</td>
+                <td class="py-3 px-4 text-right font-mono text-yellow-300">${fmt(i.store)}</td>
+                <td class="py-3 px-4 text-right font-mono text-green-300">${fmt(i.donated)}</td>
+                <td class="py-3 px-4 text-xs text-gray-300"><i class="fa-solid fa-location-dot text-gray-500 mr-1"></i>${i.dropoff}</td>
+                <td class="py-3 px-4 text-xs font-mono text-gray-400">${i.date}</td>
+            </tr>
+        `).join('');
     </script>
 </body>
 </html>
