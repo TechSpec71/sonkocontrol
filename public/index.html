@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRT | Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { background-color: #0a0a0a; color: #e5e5e5; }
+        .gold-border { border-color: #FFD700; }
+        .gold-text { color: #FFD700; }
+        .gold-bg { background-color: #FFD700; }
+        #map { height: 500px; width: 100%; border-radius: 12px; filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
+        .pulsing-marker {
+            width: 12px; height: 12px; background: #FFD700; border-radius: 50%;
+            box-shadow: 0 0 0 rgba(255, 215, 0, 0.4); animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
+    </style>
+</head>
+<body class="font-sans">
+
+    <nav class="border-b border-gray-800 p-4 flex justify-between items-center bg-[#111]">
+        <div class="flex items-center space-x-2">
+            <div class="w-10 h-10 gold-bg rounded-full flex items-center justify-center text-black font-bold">SRT</div>
+            <h1 class="text-xl font-bold tracking-tighter gold-text">MHE. SONKO COMMAND</h1>
+        </div>
+        <div class="hidden md:block text-xs font-mono text-gray-500 uppercase tracking-widest">
+            System Status: <span class="text-green-500">Secure & Active</span>
+        </div>
+    </nav>
+
+    <main class="p-6 max-w-7xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-xs uppercase">Fleet Active</p>
+                <p class="text-2xl font-bold gold-text">24 <span class="text-xs text-gray-400 font-normal">Vehicles</span></p>
+            </div>
+            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-xs uppercase">Water Dispatched</p>
+                <p class="text-2xl font-bold">180K <span class="text-xs text-gray-400 font-normal">Liters</span></p>
+            </div>
+            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-xs uppercase">Rescue Alerts</p>
+                <p class="text-2xl font-bold text-red-500">03</p>
+            </div>
+            <div class="bg-[#161616] p-4 rounded-lg border border-gray-800">
+                <p class="text-gray-500 text-xs uppercase">Relief Cases</p>
+                <p class="text-2xl font-bold text-blue-400">12</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-[#161616] p-4 rounded-xl border border-gray-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-sm font-bold uppercase tracking-widest">Live GPS Radar: Nairobi Area</h3>
+                    <span class="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400">ENCRYPTED STREAMING</span>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <div class="bg-[#161616] p-4 rounded-xl border border-gray-800">
+                <h3 class="text-sm font-bold mb-4 uppercase gold-text">Active Operations</h3>
+                <div class="space-y-4">
+                    <div class="border-l-2 border-yellow-500 pl-3 py-1">
+                        <p class="text-xs font-bold uppercase">Water Bowser #4</p>
+                        <p class="text-xs text-gray-400">Mathare Area 4 - Offloading</p>
+                    </div>
+                    <div class="border-l-2 border-red-500 pl-3 py-1">
+                        <p class="text-xs font-bold uppercase">Ambulance #SRT-01</p>
+                        <p class="text-xs text-gray-400">En Route: Upper Hill Office</p>
+                    </div>
+                    <div class="border-l-2 border-blue-500 pl-3 py-1">
+                        <p class="text-xs font-bold uppercase">Relief Truck #12</p>
+                        <p class="text-xs text-gray-400">Isiolo Empowerment Drive - Loading</p>
+                    </div>
+                </div>
+                <button class="w-full mt-8 py-3 gold-bg text-black font-black text-sm uppercase rounded shadow-2xl">
+                    Push Daily Report to Mheshimiwa
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize Map centered on Nairobi
+        var map = L.map('map').setView([-1.286389, 36.817223], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Custom Pulsing Icon
+        var pulsingIcon = L.divIcon({
+            className: 'pulsing-marker',
+            iconSize: [12, 12]
+        });
+
+        // Add Mock Fleet Markers
+        var markers = [
+            { pos: [-1.298, 36.823], label: "SRT Ambulance 01" },
+            { pos: [-1.265, 36.800], label: "Water Bowser 04" },
+            { pos: [-1.280, 36.850], label: "Burial Aid Team" }
+        ];
+
+        markers.forEach(m => {
+            L.marker(m.pos, {icon: pulsingIcon}).addTo(map).bindPopup(m.label);
+        });
+
+        // Simple Animation: Simulate movement
+        setInterval(() => {
+            map.panBy([1, 1]);
+        }, 3000);
+    </script>
+</body>
+</html>
