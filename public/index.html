@@ -227,6 +227,7 @@
                 color: 'gold',
                 accent: 'border-yellow-500',
                 detail: 'Mathare Area 4 — Offloading',
+                speed: 0.005,
                 team: [
                     { role: 'Driver',     name: 'Joseph Mwangi',      idNo: 'SRT-D-0418' },
                     { role: 'Co-Driver',  name: 'Hassan Abdi',        idNo: 'SRT-D-0420' },
@@ -249,6 +250,7 @@
                 color: 'red',
                 accent: 'border-red-500',
                 detail: 'En Route: Upper Hill Office',
+                speed: 0.010,
                 team: [
                     { role: 'Paramedic',     name: 'Dr. Anne Kariuki',   idNo: 'SRT-M-0101' },
                     { role: 'EMT',           name: 'Brian Otieno',       idNo: 'SRT-M-0114' },
@@ -271,6 +273,7 @@
                 color: 'blue',
                 accent: 'border-blue-500',
                 detail: 'Isiolo Empowerment Drive — Loading',
+                speed: 0.006,
                 team: [
                     { role: 'Convoy Lead', name: 'Samuel Kiprono',  idNo: 'SRT-L-0033' },
                     { role: 'Driver',      name: 'Mohamed Ali',     idNo: 'SRT-D-0511' },
@@ -285,6 +288,54 @@
                     [-1.2820, 36.8278],
                     [-1.2802, 36.8240],
                     [-1.2740, 36.8205]
+                ]
+            },
+            {
+                id: 'fire-07',
+                name: 'Fire Engine #07',
+                img: 'img/fireengine.png',
+                color: 'red',
+                accent: 'border-orange-500',
+                detail: 'Industrial Area — Active Response',
+                speed: 0.012,
+                team: [
+                    { role: 'Station Officer', name: 'Capt. James Wekesa', idNo: 'SRT-F-0901' },
+                    { role: 'Driver',          name: 'Stephen Mutua',      idNo: 'SRT-D-0610' },
+                    { role: 'Firefighter',     name: 'Naomi Chebet',       idNo: 'SRT-F-0915' },
+                    { role: 'Firefighter',     name: 'Kevin Onyango',      idNo: 'SRT-F-0922' },
+                    { role: 'Medic',           name: 'Aisha Mohamed',      idNo: 'SRT-M-0144' }
+                ],
+                path: [
+                    [-1.3110, 36.8480],
+                    [-1.3085, 36.8525],
+                    [-1.3055, 36.8560],
+                    [-1.3030, 36.8540],
+                    [-1.3045, 36.8495],
+                    [-1.3080, 36.8460],
+                    [-1.3110, 36.8480]
+                ]
+            },
+            {
+                id: 'tow-03',
+                name: 'Breakdown Truck #03',
+                img: 'img/breakdown.png',
+                color: 'gold',
+                accent: 'border-amber-400',
+                detail: 'Thika Road — Recovery in Progress',
+                speed: 0.004,
+                team: [
+                    { role: 'Recovery Lead', name: 'Patrick Kamau',  idNo: 'SRT-R-0402' },
+                    { role: 'Driver',        name: 'Eric Wanjala',   idNo: 'SRT-D-0712' },
+                    { role: 'Mechanic',      name: 'Lucy Atieno',    idNo: 'SRT-M-0805' }
+                ],
+                path: [
+                    [-1.2390, 36.8780],
+                    [-1.2370, 36.8830],
+                    [-1.2345, 36.8880],
+                    [-1.2320, 36.8920],
+                    [-1.2295, 36.8870],
+                    [-1.2330, 36.8815],
+                    [-1.2390, 36.8780]
                 ]
             }
         ];
@@ -379,7 +430,7 @@
                 const lat = lerp(a[0], b[0], m.t);
                 const lng = lerp(a[1], b[1], m.t);
                 m.marker.setLatLng([lat, lng]);
-                m.t += 0.0035;
+                m.t += (m.v.speed || 0.012);
                 if (m.t >= 1) { m.t = 0; m.segment = (m.segment + 1) % path.length; }
             });
             requestAnimationFrame(step);
